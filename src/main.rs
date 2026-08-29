@@ -1,15 +1,13 @@
-mod offsets;
-mod memory;
-use crate::memory::lib_memory::{get_gmod_process_id, get_module_base_address, read_f32_bytes_from_memory, read_i32_bytes_from_memory};
+mod helpers;
+
 
 use std::process;
 use std::ffi::c_void;
 use std::ops::Add;
 use windows::Win32::System::Diagnostics::ToolHelp::{CreateToolhelp32Snapshot, Process32First, PROCESSENTRY32, TH32CS_SNAPPROCESS, Process32Next, TH32CS_SNAPMODULE, TH32CS_SNAPMODULE32, Module32FirstW, Module32NextW};
 use windows::Win32::System::Threading::{OpenProcess, PROCESS_QUERY_INFORMATION, PROCESS_VM_OPERATION, PROCESS_VM_READ, PROCESS_VM_WRITE};
-use crate::offsets::OFFSETS;
-
-
+use crate::helpers::lib_memory::{get_gmod_process_id, get_module_base_address, read_f32_bytes_from_memory, read_i32_bytes_from_memory};
+use crate::helpers::offsets::OFFSETS;
 
 #[warn(unused_variables)]
 fn main() {

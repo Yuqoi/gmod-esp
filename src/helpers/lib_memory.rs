@@ -1,11 +1,8 @@
 use std::ffi::c_void;
-use std::io::Error;
 use std::{f32, process};
 use windows::Win32::Foundation::{CloseHandle, HANDLE};
 use windows::Win32::System::Diagnostics::Debug::ReadProcessMemory;
 use windows::Win32::System::Diagnostics::ToolHelp::{CreateToolhelp32Snapshot, Module32NextW, MODULEENTRY32W, TH32CS_SNAPMODULE, Module32FirstW, TH32CS_SNAPMODULE32, TH32CS_SNAPPROCESS, PROCESSENTRY32, Process32First, Process32Next};
-use windows::Win32::System::Threading::{OpenProcess, PROCESS_QUERY_INFORMATION, PROCESS_VM_OPERATION, PROCESS_VM_READ, PROCESS_VM_WRITE};
-use crate::offsets::OFFSETS;
 
 pub fn get_module_base_address(module_name: &str, pid: u32) -> Option<usize> {
     unsafe {
