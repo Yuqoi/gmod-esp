@@ -57,6 +57,39 @@ pub fn read_i32_bytes_from_memory(process: HANDLE, address: *const c_void) -> Op
     }
 }
 
+pub fn read_matrix(process: HANDLE, address: *const c_void, ) -> Option<[f32; 16]> {
+    let mut buffer = [0u8; 64];
+    let mut bytes_read = 0;
+
+    let res = unsafe {
+        ReadProcessMemory(
+            process,
+            address,
+            buffer.as_mut_ptr() as *mut c_void,
+            64,
+            Some(&mut bytes_read),
+        )
+    };
+
+    if res.is_err() || bytes_read != 64 {
+        return None;
+    }
+
+    let mut matrix = [0.0f32; 16];
+
+    for i in 0..16 {
+        let bytes = [
+            buffer[i * 4],
+            buffer[i * 4 + 1],
+            buffer[i * 4 + 2],
+            buffer[i * 4 + 3],
+        ];
+        matrix[i] = f32::from_le_bytes(bytes);
+    }
+
+    Some(matrix)
+}
+
 pub fn read_f32_bytes_from_memory(process: HANDLE, address: *const c_void) -> Option<f32> {
     let mut buffer = [0u8; 4];
     let mut bytes_read= 0;
