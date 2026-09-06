@@ -8,7 +8,7 @@ pub fn to_world_screen(viewmatrix: [f32; 16], world_pos: [f32; 3], window_size: 
         .to_owned();
 
     let mut world_h = Array::from(vec![world_pos[0], world_pos[1], world_pos[2], 1.0]);
-    // world_h = Array::add(world_h, 1.0);
+    world_h = Array::add(world_h, 1.0);
 
     let clip = mat.dot(&world_h);
 
@@ -16,6 +16,7 @@ pub fn to_world_screen(viewmatrix: [f32; 16], world_pos: [f32; 3], window_size: 
         return (0.0,0.0)
     }
 
+    // dbg!(&clip);
     let ndc_x = clip[0] / clip[3];
     let ndc_y = clip[1] / clip[3];
 

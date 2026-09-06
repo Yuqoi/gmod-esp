@@ -37,8 +37,8 @@ fn main() -> procmod_overlay::Result<()> {
 
         let mut overlay = Overlay::new(OverlayTarget::Pid(gmod_pid))?;
 
-        let viewmatrix = read_matrix(game_process, (engine_dll + OFFSETS.lock().unwrap().get("PLAYER_VIEWMATRIX").unwrap()) as *const c_void).unwrap();
-        dbg!(viewmatrix);
+        // let viewmatrix = read_matrix(game_process, (engine_dll + OFFSETS.lock().unwrap().get("PLAYER_VIEWMATRIX").unwrap()) as *const c_void).unwrap();
+        // dbg!(viewmatrix);
         loop{
             overlay.begin_frame()?;
 
@@ -53,21 +53,23 @@ fn main() -> procmod_overlay::Result<()> {
                 let health_point_address = read.unwrap() as usize + OFFSETS.lock().unwrap().get("PLAYER_HEALTH_ADDRESS").unwrap();
                 let entity_health = read_i32_bytes_from_memory(game_process, health_point_address as *const c_void);
 
+
                 if entity_health.is_none() || entity_health.unwrap() <= 0{
                     continue;
                 }
-
                 let plr_x = read_f32_bytes_from_memory(game_process, (read.unwrap() as usize + 0x026C) as *const c_void).unwrap_or_else(|| panic!("couldnt find plr_x."));
                 let plr_y = read_f32_bytes_from_memory(game_process, (read.unwrap() + 0x0270) as *const c_void).unwrap_or_else(|| panic!("couldnt find plr_y."));
                 let plr_z = read_f32_bytes_from_memory(game_process, (read.unwrap() + 0x0274) as *const c_void).unwrap_or_else(|| panic!("couldnt find plr_z"));
                 let head_z = read_f32_bytes_from_memory(game_process, (read.unwrap() + 0x0274) as *const c_void).unwrap_or_else(|| panic!("couldnt find plr_head_z")) + 64.0;
 
-                // println!("Plr {}-{}-{}/{}", plr_x, plr_y, plr_z, head_z);
+                // println!("Plr x -> {}\ny -> {}\nz -> {}\n", plr_x, plr_y, plr_z);
+
+                let viewmatrix = read_matrix(game_process, (engine_dll + OFFSETS.lock().unwrap().get("PLAYER_VIEWMATRIX").unwrap()) as *const c_void).unwrap();
 
                 let feet_coords = to_world_screen(viewmatrix, [plr_x, plr_y, plr_z], overlay.size());
                 let head_coords = to_world_screen(viewmatrix, [plr_x, plr_y, head_z ], overlay.size());
-
-
+                //
+                //
                 let height = feet_coords.1 - head_coords.1;
                 let width = height / 2.5;
                 if feet_coords != (0.0,0.0){
@@ -78,7 +80,7 @@ fn main() -> procmod_overlay::Result<()> {
                         h: height,
                     });
                 }
-
+                //
                 for ent in entities.iter(){
                     println!("{:?}", ent);
                     // overlay.rect(ent.x, ent.y,100.0, 100.0, Color::RED);
