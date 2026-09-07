@@ -67,27 +67,34 @@ fn main() -> procmod_overlay::Result<()> {
                 let viewmatrix = read_matrix(game_process, (engine_dll + OFFSETS.lock().unwrap().get("PLAYER_VIEWMATRIX").unwrap()) as *const c_void).unwrap();
 
                 let feet_coords = to_world_screen(viewmatrix, [plr_x, plr_y, plr_z], overlay.size());
-                let head_coords = to_world_screen(viewmatrix, [plr_x, plr_y, head_z ], overlay.size());
-                //
-                //
-                let height = feet_coords.1 - head_coords.1;
-                let width = height / 2.5;
-                if feet_coords != (0.0,0.0){
-                    entities.push(EntityBot {
-                        x: head_coords.0 - width / 2.0,
-                        y: head_coords.1,
-                        w: width,
-                        h: height,
-                    });
+                if feet_coords == None {
+                    continue;
                 }
-                //
+                let head_coords = to_world_screen(viewmatrix, [plr_x, plr_y, head_z ], overlay.size());
+
+
+                let (feet_x, feet_y) = feet_coords.unwrap();
+                let (_head_x, head_y) = head_coords.unwrap();
+
+                let height = feet_y - head_y;
+                if height <= 0. {
+                    continue;
+                }
+
+
+                let width = height / 2.5;
+
+                let x = feet_x - (width / 2.);
+                let y = head_y;
+
+                entities.push(EntityBot{x, y, w: width, h: height});
+
                 for ent in entities.iter(){
                     println!("{:?}", ent);
-                    // overlay.rect(ent.x, ent.y,100.0, 100.0, Color::RED);
                     overlay.rect(ent.x, ent.y, ent.w, ent.h, Color::RED);
                     // overlay.text(ent.x - 20.0, ent.y + 20.0, "instrumentation active", 16.0, Color::WHITE);
                 }
-
+                overlay.rect(0.,0.,20.,20., Color::RED);
                 entities.clear();
                 overlay.end_frame()?;
             }

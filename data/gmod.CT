@@ -2,28 +2,17 @@
 <CheatTable CheatEngineTableVersion="52">
   <CheatEntries>
     <CheatEntry>
-      <ID>7</ID>
-      <Description>"possible view matrix"</Description>
-      <ShowAsSigned>0</ShowAsSigned>
-      <VariableType>Double</VariableType>
-      <Address>engine.dll+415B14</Address>
-    </CheatEntry>
-    <CheatEntry>
-      <ID>11</ID>
-      <Description>"pointerscan result"</Description>
-      <ShowAsSigned>0</ShowAsSigned>
-      <VariableType>4 Bytes</VariableType>
-      <Address>"client.dll"+0080DC74</Address>
-    </CheatEntry>
-    <CheatEntry>
-      <ID>12</ID>
+      <ID>1</ID>
       <Description>"No description"</Description>
       <ShowAsSigned>0</ShowAsSigned>
-      <VariableType>4 Bytes</VariableType>
-      <Address>6C8ADC74</Address>
-      <Offsets>
-        <Offset>0</Offset>
-      </Offsets>
+      <VariableType>Float</VariableType>
+      <Address>engine.dll+415BF4</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>2</ID>
+      <Description>"No description"</Description>
+      <VariableType>Float</VariableType>
+      <Address>0E4CEEF8</Address>
     </CheatEntry>
   </CheatEntries>
   <UserdefinedSymbols/>
