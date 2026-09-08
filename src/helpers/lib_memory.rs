@@ -127,7 +127,7 @@ pub fn get_gmod_process_id() -> Option<u32>{
         });
 
         loop {
-            let name = String::from_utf8(pe32.szExeFile.to_vec().iter().map(|x| *x as u8).collect()).unwrap_or_else(|e| {
+            let name = String::from_utf8(pe32.szExeFile.to_vec().iter().map(|x| *x as u8).collect()).unwrap_or_else(|_e| {
                 process::exit(1);
             });
 

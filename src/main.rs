@@ -1,12 +1,7 @@
 mod helpers;
 
-use std::collections::HashMap;
-use std::process;
 use std::ffi::c_void;
-use std::ops::{Add, Deref};
-use ndarray::Array;
 use procmod_overlay::{Color, Overlay, OverlayTarget};
-use windows::Win32::System::Diagnostics::ToolHelp::{CreateToolhelp32Snapshot, Process32First, PROCESSENTRY32, TH32CS_SNAPPROCESS, Process32Next, TH32CS_SNAPMODULE, TH32CS_SNAPMODULE32, Module32FirstW, Module32NextW};
 use windows::Win32::System::Threading::{OpenProcess, PROCESS_QUERY_INFORMATION, PROCESS_VM_OPERATION, PROCESS_VM_READ, PROCESS_VM_WRITE};
 use crate::helpers::lib_memory::{get_gmod_process_id, get_module_base_address, read_f32_bytes_from_memory, read_i32_bytes_from_memory, read_matrix};
 use crate::helpers::math::to_world_screen;
@@ -81,7 +76,7 @@ fn main() -> procmod_overlay::Result<()> {
                 }
 
                 let health_point_address = read.unwrap() as usize + OFFSETS.lock().unwrap().get("PLAYER_HEALTH_ADDRESS").unwrap();
-                let entity_health = match read_i32_bytes_from_memory(game_process, health_point_address as *const c_void){
+                let _entity_health = match read_i32_bytes_from_memory(game_process, health_point_address as *const c_void){
                     Some(val) => if val as f32 <= 0.0 {
                         continue;
                     }else{
