@@ -34,10 +34,13 @@ fn get_esp_coords(viewmatrix: &[f32; 16], entity_coords: &EntityCoords, window_s
         Some(coords) => coords,
         None => return None
     };
-    let head_coords = to_world_screen(*viewmatrix, [entity_coords.x, entity_coords.y, entity_coords.head], *window_size);
+    let head_coords = match to_world_screen(*viewmatrix, [entity_coords.x, entity_coords.y, entity_coords.head], *window_size) {
+        Some(coords) => coords,
+        None => return None
+    };
 
     let (feet_x, feet_y) = feet_coords;
-    let (_head_x, head_y) = head_coords.unwrap();
+    let (_head_x, head_y) = head_coords;
 
     let height = feet_y - head_y ;
     if height <= 0. {
@@ -63,14 +66,12 @@ fn main() -> procmod_overlay::Result<()> {
         let client_dll = get_module_base_address("client.dll", gmod_pid).ok_or("couldnt find client.dll :(").unwrap();
         let engine_dll = get_module_base_address("engine.dll", gmod_pid).ok_or("couldnt find engine.dll :(").unwrap();
 
-        let mut entities:Vec<EntityBox> = Vec::new();
         let mut overlay = Overlay::new(OverlayTarget::Pid(gmod_pid))?;
 
         loop{
             overlay.begin_frame()?;
 
-            for i in 1 ..100 {
-                entities.clear();
+            for i in 1 ..120 {
 
                 let entity_ptr = client_dll + OFFSETS.lock().unwrap().get("PLAYER_OFFSET").unwrap() + 0x0004 * i;
                 let read = read_i32_bytes_from_memory(game_process, entity_ptr as *const c_void);
@@ -88,7 +89,6 @@ fn main() -> procmod_overlay::Result<()> {
                     },
                     None => continue,
                 };
-
 
                 let x = match read_f32_bytes_from_memory(game_process, (read.unwrap() as usize + 0x026C) as *const c_void) {
                     Some(val) => val,
@@ -116,21 +116,17 @@ fn main() -> procmod_overlay::Result<()> {
                     None => break,
                 };
 
-                match get_esp_coords(&viewmatrix, &plr_coords, &overlay.size()){
-                    Some(coords) => entities.push(
-                        EntityBox{
-                            x: coords.0,
-                            y: coords.1,
-                            w: coords.2,
-                            h: coords.3,
-                        }
-                    ),
+                let res = match get_esp_coords(&viewmatrix, &plr_coords, &overlay.size()){
+                    Some(coords) => EntityBox{
+                        x: coords.0,
+                        y: coords.1,
+                        w: coords.2,
+                        h: coords.3,
+                    },
                     None => continue,
                 };
 
-                for ent in entities.iter(){
-                    overlay.rect(ent.x, ent.y, ent.w, ent.h, Color::RED);
-                }
+                overlay.rect(res.x, res.y, res.w, res.h, Color::RED);
 
             }
             overlay.end_frame()?;
