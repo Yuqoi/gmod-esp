@@ -66,7 +66,7 @@ fn main() -> procmod_overlay::Result<()> {
         loop{
             overlay.begin_frame()?;
 
-            for i in 1 ..120 {
+            for i in 0 ..120 {
 
                 let entity_ptr = client_dll + OFFSETS.lock().unwrap().get("PLAYER_OFFSET").unwrap() + 0x0004 * i;
                 let read = read_i32_bytes_from_memory(game_process, entity_ptr as *const c_void);
